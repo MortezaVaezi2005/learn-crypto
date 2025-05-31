@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>راهنمای جامع AES با اصول جبر خطی و ماشین حساب ساده</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700&display=swap');
+
+        body {
+            font-family: 'Vazirmatn', 'Tahoma', 'Helvetica', sans-serif;
+            line-height: 1.8;
+            margin: 0;
+            padding: 20px 0;
+            background-color: #f8f9fa;
+            color: #343a40;
+            direction: rtl;
+        }
+        .container {
+            width: 85%;
+            max-width: 900px;
+            margin: 30px auto;
+            background-color: #ffffff;
+            padding: 35px 45px;
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+            border-top: 5px solid #28a745; /* Green accent for AES */
+        }
+        h1 {
+            text-align: center;
+            color: #1e7e34; /* Darker Green */
+            margin-bottom: 35px;
+            font-weight: 700;
+        }
+        h2 {
+            color: #28a745; /* Primary Green */
+            margin-top: 30px;
+            margin-bottom: 20px;
+            font-weight: 500;
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 10px;
+        }
+        h3 {
+            color: #218838; /* Darker shade of Green */
+            margin-top: 25px;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+         h4 {
+            color: #155724; /* Even darker green for sub-operation titles */
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-weight: bold; /* Make H4 bold for emphasis */
+        }
+        p, .math-explanation {
+            margin-bottom: 15px;
+            font-size: 1.05em;
+        }
+        ul, ol {
+            padding-right: 20px;
+            margin-bottom: 15px;
+        }
+        li {
+            margin-bottom: 10px;
+            font-size: 1.05em;
+        }
+        strong {
+            font-weight: bold; /* Standard bold */
+            color: #007bff; 
+        }
+        code, .code-block {
+            font-family: 'Consolas', 'Menlo', 'Courier New', monospace;
+            background-color: #e9ecef;
+            padding: 3px 7px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            color: #c7254e; 
+            direction: ltr; 
+            display: inline-block;
+        }
+        .code-block { /* For multi-line code or matrix display */
+            display: block;
+            padding: 10px;
+            margin: 10px 0;
+            white-space: pre;
+            overflow-x: auto;
+            border: 1px solid #ddd;
+            background-color: #f5f5f5;
+        }
+        .note {
+            font-size: 0.95em;
+            color: #5a5a5a; /* Slightly darker grey for notes */
+            padding: 10px 15px;
+            background-color: #f0f0f0; /* Lighter grey */
+            border-right: 4px solid #28a745; /* Green accent */
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+         .math-section { /* For detailed math explanations */
+            padding: 15px;
+            margin-top:20px;
+            margin-bottom:20px;
+            background-color: #e6fff2; /* Very light green */
+            border: 1px solid #a3d8b8; /* Light green border */
+            border-radius: 6px;
+        }
+        .math-section p, .math-section ul, .math-section ol { font-size: 1em; }
+
+
+        /* Styles for Simple AES Calculator (Unchanged from previous) */
+        #simple-aes-calculator {
+            margin-top: 30px;
+            padding: 20px;
+            border: 1px solid #c3e6cb; 
+            border-radius: 8px;
+            background-color: #f0fff4; 
+        }
+        #simple-aes-calculator h3 {
+            color: #155724; 
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .aes-calc-group {
+            margin-bottom: 20px;
+        }
+        .aes-calc-group label { 
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #343a40;
+        }
+        .aes-calc-group input[type="text"], 
+        .aes-calc-group textarea {
+            width: calc(100% - 24px);
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #b8dabf;
+            border-radius: 4px;
+            font-family: 'Vazirmatn', 'Tahoma', sans-serif; 
+            font-size: 1em;
+        }
+        .aes-calc-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        .aes-calc-group input[type="text"] { 
+            direction: ltr;
+            background-color: #e9f7ef;
+        }
+        #simple-aes-calculator button { 
+            background-color: #28a745; 
+            color: white;
+            padding: 10px 18px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Vazirmatn', 'Tahoma', sans-serif;
+            font-size: 1em;
+            transition: background-color 0.3s ease;
+            margin: 5px 0;
+        }
+        #simple-aes-calculator button:hover {
+            background-color: #218838; 
+        }
+        .key-display-area {
+            padding: 10px;
+            background-color: #e9f7ef;
+            border: 1px solid #b8dabf;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            font-family: 'Consolas', 'Menlo', monospace;
+            direction: ltr;
+            word-break: break-all;
+        }
+        .key-display-area strong { color: #155724; }
+
+        .calc-log-aes-simple {
+            margin-top: 20px;
+            background-color: #343a40; 
+            color: #f8f9fa; 
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Consolas', 'Menlo', 'Courier New', monospace;
+        }
+        .calc-log-aes-simple h4 { 
+            color: #28a745; 
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-family: 'Vazirmatn', 'Tahoma', sans-serif;
+            text-align: right;
+        }
+        .calc-log-aes-simple pre { 
+            white-space: pre-wrap; 
+            word-wrap: break-word;
+            font-size: 0.9em;
+            max-height: 200px;
+            overflow-y: auto;
+            direction: ltr; 
+            text-align: left;
+        }
+
+        @media (max-width: 768px) {
+            .container { width: 95%; padding: 25px 20px; }
+            h1 { font-size: 1.8em; }
+            h2 { font-size: 1.5em; }
+            p, li { font-size: 1em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>راهنمای جامع الگوریتم رمزنگاری AES با اصول جبر خطی 🛡️</h1>
+        
+        <section id="aes-introduction-detailed">
+            <h2>مقدمه: AES و ساختار داده</h2>
+            <p>
+                الگوریتم <strong>AES (Advanced Encryption Standard)</strong> یک استاندارد رمزنگاری پیشرفته و متقارن است که داده‌ها را در قالب بلوک‌های ۱۲۸ بیتی (۱۶ بایتی) پردازش می‌کند. نکته کلیدی در فهم AES، نحوه نمایش و دستکاری این بلوک‌های داده است. هر بلوک ۱۲۸ بیتی ورودی (متن اصلی) و همچنین کلیدهای دور، به صورت یک ماتریس ۴x۴ از بایت‌ها سازماندهی می‌شوند که به آن <strong>آرایه حالت (State Array)</strong> یا به اختصار "حالت" (State) گفته می‌شود.
+            </p>
+            <div class="code-block" style="text-align:center; direction:ltr;">
+State = [ s<sub>0,0</sub>  s<sub>0,1</sub>  s<sub>0,2</sub>  s<sub>0,3</sub> ]
+        [ s<sub>1,0</sub>  s<sub>1,1</sub>  s<sub>1,2</sub>  s<sub>1,3</sub> ]
+        [ s<sub>2,0</sub>  s<sub>2,1</sub>  s<sub>2,2</sub>  s<sub>2,3</sub> ]
+        [ s<sub>3,0</sub>  s<sub>3,1</sub>  s<sub>3,2</sub>  s<sub>3,3</sub> ]</div>
+            <p>عملیات مختلف AES (که در ادامه توضیح داده می‌شوند) تبدیلات ریاضی و منطقی را روی این آرایه حالت اعمال می‌کنند.</p>
+        </section>
+        <hr/>
+        <section id="aes-key-specs-detailed">
+            <h2>مشخصات اصلی و تعداد دورها</h2>
+            <ul>
+                <li><strong>اندازه بلوک:</strong> همواره ۱۲۸ بیت (۱۶ بایت)، معادل یک ماتریس حالت ۴x۴.</li>
+                <li><strong>اندازه کلید:</strong> ۱۲۸، ۱۹۲ یا ۲۵۶ بیت.</li>
+                <li><strong>تعداد دورها (Nr):</strong> وابسته به طول کلید (Nk، تعداد کلمات ۳۲ بیتی در کلید):
+                    <ul>
+                        <li>کلید ۱۲۸ بیتی (Nk=4): ۱۰ دور</li>
+                        <li>کلید ۱۹۲ بیتی (Nk=6): ۱۲ دور</li>
+                        <li>کلید ۲۵۶ بیتی (Nk=8): ۱۴ دور</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+        <hr/>
+        <section id="aes-encryption-process-detailed">
+            <h2>فرآیند کلی رمزنگاری در AES</h2>
+            <p>رمزنگاری یک بلوک داده در AES شامل مراحل زیر است:</p>
+            <ol>
+                <li><strong>گسترش کلید (Key Expansion):</strong> از کلید رمز اصلی (Cipher Key)، مجموعه‌ای از کلیدهای دور (Round Keys) تولید می‌شود. هر کلید دور نیز یک ماتریس ۴x۴ از بایت‌ها است. این فرآیند خود شامل عملیات بایتی، جایگشت کلمات (<code>RotWord</code>)، استفاده از S-Box (در <code>SubWord</code>) و XOR با بردارهای ثابت دور (<code>Rcon</code>) است.</li>
+                <li><strong>دور اولیه (Initial Round):</strong>
+                    <ul>
+                        <li><code>AddRoundKey</code>: آرایه حالت اولیه با اولین کلید دور XOR می‌شود. این معادل جمع برداری در فضای برداری روی $GF(2)$ است که عناصر آن بیت‌ها هستند، یا جمع ماتریسی عنصر به عنصر با عمل XOR.</li>
+                    </ul>
+                </li>
+                <li><strong>دورهای اصلی (Main Rounds - Nr-1 دور):</strong> هر دور شامل چهار تبدیل است:
+                    <ul>
+                        <li><code>SubBytes</code> (جایگزینی بایت‌ها – یک تبدیل غیرخطی)</li>
+                        <li><code>ShiftRows</code> (شیفت سطری – یک جایگشت خطی)</li>
+                        <li><code>MixColumns</code> (ترکیب ستونی – یک تبدیل خطی روی ستون‌ها)</li>
+                        <li><code>AddRoundKey</code> (جمع ماتریسی با کلید دور بعدی)</li>
+                    </ul>
+                </li>
+                <li><strong>دور نهایی (Final Round - دور Nrام):</strong> شامل سه تبدیل:
+                    <ul>
+                        <li><code>SubBytes</code></li>
+                        <li><code>ShiftRows</code></li>
+                        <li><code>AddRoundKey</code></li>
+                    </ul>
+                    (مرحله <code>MixColumns</code> در این دور حذف می‌شود).
+                </li>
+            </ol>
+        </section>
+        <hr/>
+        <section class="math-section">
+            <h3>نگاه ریاضی عمیق‌تر به مراحل AES با استفاده از جبر خطی</h3>
+            <p>در این بخش، برخی از مراحل کلیدی AES را با تمرکز بر اصول جبر خطی و ریاضیات میدان‌های متناهی بررسی می‌کنیم.</p>
+
+            <h4>۱. عملیات در میدان گالوا $GF(2^8)$</h4>
+            <p>بسیاری از محاسبات AES در میدان متناهی $GF(2^8)$ (خوانده می‌شود "جی اِف دو به توان هشت") انجام می‌شوند. عناصر این میدان، بایت‌ها (اعداد ۸ بیتی) هستند که می‌توان آن‌ها را به عنوان چندجمله‌ای‌هایی از درجه حداکثر ۷ با ضرایب ۰ یا ۱ در نظر گرفت. برای مثال، بایت <code>10110011</code> (یا <code>0xB3</code>) معادل چندجمله‌ای $x^7 + x^5 + x^4 + x + 1$ است.</p>
+            <ul>
+                <li><strong>جمع (+) در $GF(2^8)$:</strong> معادل عمل XOR (⊕) بیتی است. این همان جمع چندجمله‌ای‌ها در $GF(2)[x]$ است.</li>
+                <li><strong>ضرب (·) در $GF(2^8)$:</strong> ضرب چندجمله‌ای‌ها است که نتیجه آن بر یک چندجمله‌ای کاهش‌ناپذیر (irreducible polynomial) درجه ۸ تقسیم شده و باقیمانده به عنوان حاصل ضرب در نظر گرفته می‌شود. چندجمله‌ای کاهش‌ناپذیر استاندارد در AES، $m(x) = x^8 + x^4 + x^3 + x + 1$ (یا <code>0x11B</code>) است.</li>
+            </ul>
+
+            <h4 id="subbytes-math">۲. تبدیل SubBytes (جایگزینی بایت‌ها)</h4>
+            <p>این یک تبدیل <strong>غیرخطی</strong> است که هر بایت از آرایه حالت را به طور مستقل با بایت دیگری از طریق جدول S-Box جایگزین می‌کند. ساختار S-Box از دو مرحله ریاضی تشکیل شده است:</p>
+            <ol>
+                <li><strong>محاسبه وارون ضربی در $GF(2^8)$:</strong> هر بایت ورودی $b$ (به جز بایت <code>0x00</code> که به خودش نگاشت می‌شود) با وارون ضربی‌اش $b^{-1}$ در میدان $GF(2^8)$ جایگزین می‌شود. یعنی $b \cdot b^{-1} \equiv 1 \pmod{m(x)}$.</li>
+                <li><strong>اعمال یک تبدیل آفین (Affine Transformation) بر روی بیت‌های $b^{-1}$:</strong> بایت $b^{-1}$ (که نتیجه مرحله قبل است) به عنوان یک بردار ۸ بیتی $v = [v_7, v_6, \dots, v_0]^T$ در نظر گرفته می‌شود. سپس بردار جدید $v'$ از طریق $v' = \mathbf{A} \cdot v \oplus \mathbf{c}$ محاسبه می‌شود. در اینجا، $\mathbf{A}$ یک ماتریس ثابت ۸x۸ با درایه‌های ۰ و ۱ است و $\mathbf{c}$ یک بردار ثابت ۸ بیتی (<code>0x63</code> یا <code>01100011</code>) است. تمام محاسبات در این تبدیل آفین (ضرب ماتریسی و جمع برداری) در $GF(2)$ انجام می‌شود (یعنی جمع همان XOR است).
+                <div class="code-block" style="font-size: 0.8em; text-align:center;">
+[v'<sub>0</sub>]   [1 0 0 0 1 1 1 1] [v<sub>0</sub>]   [1]
+[v'<sub>1</sub>]   [1 1 0 0 0 1 1 1] [v<sub>1</sub>]   [1]
+[v'<sub>2</sub>]   [1 1 1 0 0 0 1 1] [v<sub>2</sub>]   [0]
+[v'<sub>3</sub>] = [1 1 1 1 0 0 0 1] [v<sub>3</sub>] ⊕ [0]
+[v'<sub>4</sub>]   [1 1 1 1 1 0 0 0] [v<sub>4</sub>]   [0]
+[v'<sub>5</sub>]   [0 1 1 1 1 1 0 0] [v<sub>5</sub>]   [1]
+[v'<sub>6</sub>]   [0 0 1 1 1 1 1 0] [v<sub>6</sub>]   [1]
+[v'<sub>7</sub>]   [0 0 0 1 1 1 1 1] [v<sub>7</sub>]   [0]
+                </div>
+                </li>
+            </ol>
+            <p>این ساختار دو مرحله‌ای، S-Box را در برابر حملات کریپتوتحلیل خطی و دیفرانسیلی مقاوم می‌کند.</p>
+
+            <h4 id="shiftrows-math">۳. تبدیل ShiftRows (شیفت سطری)</h4>
+            <p>این یک تبدیل <strong>خطی</strong> و در واقع یک عملیات جایگشت (permutation) است. بایت‌های هر سطر از آرایه حالت به صورت چرخشی به سمت چپ شیفت داده می‌شوند. اگر آرایه حالت را $S$ بنامیم، و $S_{i,j}$ عنصر سطر $i$ و ستون $j$ باشد، آنگاه حالت جدید $S'$ به این صورت است: $S'_{i,j} = S_{i, (j+c_i) \pmod 4}$ که $c_i$ میزان شیفت برای سطر $i$ است ($c_0=0, c_1=1, c_2=2, c_3=3$).</p>
+
+            <h4 id="mixcolumns-math">۴. تبدیل MixColumns (ترکیب ستونی)</h4>
+            <p>این تبدیل نیز یک عملیات <strong>خطی</strong> مهم برای خاصیت پراکندگی (diffusion) در AES است. هر ستون از آرایه حالت به طور مستقل پردازش می‌شود. هر ستون $s = [s_0, s_1, s_2, s_3]^T$ (که یک بردار ۴ عنصری است و هر عنصر یک بایت در $GF(2^8)$ است) در یک ماتریس ثابت ۴x۴ ضرب می‌شود تا ستون جدید $s' = [s'_0, s'_1, s'_2, s'_3]^T$ به دست آید:</p>
+            <div class="code-block" style="text-align:center; direction:ltr;">
+[s'<sub>0</sub>]   [02  03  01  01]   [s<sub>0</sub>]
+[s'<sub>1</sub>] = [01  02  03  01] * [s<sub>1</sub>]
+[s'<sub>2</sub>]   [01  01  02  03]   [s<sub>2</sub>]
+[s'<sub>3</sub>]   [03  01  01  02]   [s<sub>3</sub>]</div>
+            <p>تمام عملیات ضرب و جمع در این ضرب ماتریسی، در میدان $GF(2^8)$ انجام می‌شوند. به عنوان مثال:</p>
+            <p><code>s'<sub>0</sub> = (0x02 · s<sub>0</sub>) ⊕ (0x03 · s<sub>1</sub>) ⊕ (0x01 · s<sub>2</sub>) ⊕ (0x01 · s<sub>3</sub>)</code></p>
+            <p>یادآوری می‌شود که:</p>
+            <ul>
+                <li>ضرب در <code>0x01</code> خود بایت است.</li>
+                <li>ضرب در <code>0x02</code> (تابع <code>xtime</code>): اگر بیت پرارزش بایت $b$ صفر باشد، نتیجه $2b$ است (شیفت به چپ). اگر بیت پرارزش یک باشد، نتیجه $2b \oplus \text{0x1B}$ است.</li>
+                <li>ضرب در <code>0x03</code> برابر است با $(0x02 \cdot b) \oplus b$.</li>
+            </ul>
+            <p>این تبدیل خطی تضمین می‌کند که پس از چند دور، تمام بایت‌های خروجی به تمام بایت‌های ورودی وابسته باشند.</p>
+
+            <h4 id="addroundkey-math">۵. تبدیل AddRoundKey (افزودن کلید دور)</h4>
+            <p>این تبدیل یک عملیات <strong>خطی</strong> ساده است. آرایه حالت ۱۲۸ بیتی با کلید دور ۱۲۸ بیتی XOR می‌شود. اگر حالت $S$ و کلید دور $K_{round}$ را به عنوان ماتریس‌های ۴x۴ در نظر بگیریم، آنگاه حالت جدید $S'$ از $S'_{i,j} = S_{i,j} \oplus K_{round,i,j}$ برای تمام $i,j$ به دست می‌آید. این معادل جمع برداری (عنصر به عنصر) دو ماتریس در فضای برداری روی $GF(2)$ است.</p>
+        </section>
+        <hr/>
+        
+        <section id="simple-aes-calculator-section">
+            <h2>ماشین حساب ساده AES (رمزگذاری و رمزگشایی) 🧮</h2>
+            <p>با این ابزار می‌توانید به سادگی متن خود را با AES رمزگذاری و رمزگشایی کنید.</p>
+            
+            <div id="simple-aes-calculator">
+                <h3>ابزار رمزنگاری و رمزگشایی AES</h3>
+
+                <div class="aes-calc-group">
+                    <button onclick="generateAesKey()">🔑 تولید کلید ۱۲۸ بیتی AES</button>
+                    <div class="key-display-area" style="margin-top:10px;">
+                        <strong>کلید فعلی (Base64):</strong> <span id="aes_key_display">- هنوز کلیدی تولید نشده -</span>
+                    </div>
+                </div>
+                <hr/>
+                <div class="aes-calc-group">
+                    <label for="aes_plaintext_input">متن اصلی برای رمزگذاری:</label>
+                    <textarea id="aes_plaintext_input" placeholder="متنی که می‌خواهید رمز شود را اینجا وارد کنید..."></textarea>
+                    <button onclick="encryptAesText()">🔒 رمزگذاری متن</button>
+                </div>
+                <hr/>
+                <div class="aes-calc-group">
+                    <label for="aes_ciphertext_input">متن رمز شده (Base64 با فرمت IV.Ciphertext):</label>
+                    <textarea id="aes_ciphertext_input" placeholder="متن رمز شده (همراه با IV در ابتدای آن و جدا شده با نقطه) را برای رمزگشایی اینجا وارد کنید..."></textarea>
+                    <button onclick="decryptAesText()">🔓 رمزگشایی متن</button>
+                </div>
+                <hr/>
+                <div class="aes-calc-group">
+                    <label for="aes_decrypted_output">متن رمزگشایی شده:</label>
+                    <textarea id="aes_decrypted_output" readonly placeholder="نتیجه رمزگشایی اینجا نمایش داده می‌شود..."></textarea>
+                </div>
+
+                <div class="calc-log-aes-simple">
+                    <h4>Log:</h4>
+                    <pre id="aes_simple_calc_log_content"></pre>
+                </div>
+            </div>
+        </section>
+        <p class="note" style="text-align:center; margin-top:30px;">این راهنما برای اهداف آموزشی و درک مفاهیم AES با استفاده از اصول جبر خطی ارائه شده‌ است.</p>
+    </div>
+
+<script>
+let currentAesKey = null; // Stores the CryptoKey object
+let aesSimpleLogHistory = [];
+
+function addSimpleAesLog(message) {
+    const timestamp = new Date().toLocaleTimeString('en-US');
+    aesSimpleLogHistory.push(`[${timestamp}] ${message}`);
+    if (aesSimpleLogHistory.length > 30) { // Increased log size slightly
+        aesSimpleLogHistory.shift();
+    }
+    const logContentElement = document.getElementById('aes_simple_calc_log_content');
+    if (logContentElement) {
+        logContentElement.textContent = aesSimpleLogHistory.join('\n');
+        logContentElement.scrollTop = logContentElement.scrollHeight;
+    }
+}
+
+// Helper to convert ArrayBuffer to Base64
+function arrayBufferToBase64(buffer) {
+    let binary = '';
+    const bytes = new Uint8Array(buffer);
+    const len = bytes.byteLength;
+    for (let i = 0; i < len; i++) {
+        binary += String.fromCharCode(bytes[i]);
+    }
+    return window.btoa(binary);
+}
+
+// Helper to convert Base64 to ArrayBuffer
+function base64ToArrayBuffer(base64) {
+    try {
+        const binary_string = window.atob(base64);
+        const len = binary_string.length;
+        const bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes.buffer;
+    } catch (e) {
+        addSimpleAesLog(`Error: Invalid Base64 string: ${e.message}`);
+        console.error("Base64 to ArrayBuffer error:", e);
+        return null;
+    }
+}
+
+async function generateAesKey() {
+    try {
+        currentAesKey = await window.crypto.subtle.generateKey(
+            {
+                name: "AES-CBC", 
+                length: 128, 
+            },
+            true, 
+            ["encrypt", "decrypt"]
+        );
+        addSimpleAesLog("AES 128-bit key (CBC mode) generated successfully.");
+        
+        const exportedKeyBuffer = await window.crypto.subtle.exportKey("raw", currentAesKey);
+        document.getElementById('aes_key_display').textContent = arrayBufferToBase64(exportedKeyBuffer);
+
+    } catch (error) {
+        addSimpleAesLog(`Error generating AES key: ${error.message}`);
+        console.error("AES Key Generation Error:", error);
+        document.getElementById('aes_key_display').textContent = "خطا در تولید کلید";
+    }
+}
+
+async function encryptAesText() {
+    const plaintext = document.getElementById('aes_plaintext_input').value;
+    const ciphertextArea = document.getElementById('aes_ciphertext_input');
+    ciphertextArea.value = ''; 
+
+    if (!currentAesKey) {
+        addSimpleAesLog("Encryption Error: No AES key. Please generate a key first.");
+        alert("لطفاً ابتدا یک کلید AES تولید کنید.");
+        return;
+    }
+    if (!plaintext) {
+        addSimpleAesLog("Encryption Info: Plaintext is empty.");
+        alert("لطفاً متنی برای رمزگذاری وارد کنید.");
+        return;
+    }
+
+    try {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(plaintext);
+        
+        // IV for AES-CBC is 16 bytes (128 bits)
+        const iv = window.crypto.getRandomValues(new Uint8Array(16)); 
+
+        const encryptedDataBuffer = await window.crypto.subtle.encrypt(
+            {
+                name: "AES-CBC",
+                iv: iv,
+            },
+            currentAesKey,
+            data
+        );
+        
+        const ivBase64 = arrayBufferToBase64(iv.buffer);
+        const ciphertextBase64 = arrayBufferToBase64(encryptedDataBuffer);
+        
+        // Combine IV and Ciphertext for easier handling by user, separated by a dot.
+        const combinedOutput = ivBase64 + "." + ciphertextBase64;
+        ciphertextArea.value = combinedOutput;
+
+        addSimpleAesLog("Text encrypted successfully.");
+        addSimpleAesLog(`  IV (Base64): ${ivBase64.substring(0,10)}...`);
+        addSimpleAesLog(`  Ciphertext (Base64): ${ciphertextBase64.substring(0,20)}...`);
+
+    } catch (error) {
+        addSimpleAesLog(`Encryption Error: ${error.message}`);
+        console.error("AES Encryption Error:", error);
+        ciphertextArea.value = "خطا در رمزگذاری";
+    }
+}
+
+async function decryptAesText() {
+    const combinedInput = document.getElementById('aes_ciphertext_input').value;
+    const decryptedTextArea = document.getElementById('aes_decrypted_output');
+    decryptedTextArea.value = ''; 
+
+    if (!currentAesKey) {
+        addSimpleAesLog("Decryption Error: No AES key available.");
+        alert("کلید AES برای رمزگشایی موجود نیست. لطفاً ابتدا یک کلید تولید کنید یا از وجود آن مطمئن شوید.");
+        return;
+    }
+    if (!combinedInput) {
+        addSimpleAesLog("Decryption Info: Ciphertext input is empty.");
+        alert("لطفاً متن رمز شده‌ای برای رمزگشایی وارد کنید.");
+        return;
+    }
+
+    try {
+        const parts = combinedInput.split('.');
+        if (parts.length !== 2) {
+            addSimpleAesLog("Decryption Error: Invalid input format. Expected IV_base64.Ciphertext_base64");
+            throw new Error("فرمت ورودی نامعتبر است. باید به صورت IV.Ciphertext (هر دو Base64) باشد.");
+        }
+        const ivBase64 = parts[0];
+        const ciphertextBase64 = parts[1];
+
+        const ivBuffer = base64ToArrayBuffer(ivBase64);
+        const ciphertextBuffer = base64ToArrayBuffer(ciphertextBase64);
+
+        if (!ivBuffer || !ciphertextBuffer) {
+            throw new Error("خطا در تبدیل Base64 ورودی IV یا متن رمز شده.");
+        }
+         if (ivBuffer.byteLength !== 16) { // AES block size / IV size for CBC
+            addSimpleAesLog(`Decryption Error: Invalid IV length (${ivBuffer.byteLength} bytes). Expected 16 bytes.`);
+            throw new Error(`طول IV نامعتبر است. باید ۱۶ بایت باشد، اما ${ivBuffer.byteLength} بایت دریافت شد.`);
+        }
+
+        const decryptedDataBuffer = await window.crypto.subtle.decrypt(
+            {
+                name: "AES-CBC",
+                iv: new Uint8Array(ivBuffer), 
+            },
+            currentAesKey,
+            ciphertextBuffer
+        );
+
+        const decoder = new TextDecoder();
+        decryptedTextArea.value = decoder.decode(decryptedDataBuffer);
+        addSimpleAesLog("Text decrypted successfully.");
+
+    } catch (error) {
+        addSimpleAesLog(`Decryption Error: ${error.message}. Ensure key, IV, and ciphertext are correct.`);
+        console.error("AES Decryption Error:", error);
+        decryptedTextArea.value = `خطا در رمزگشایی: ${error.message}`;
+    }
+}
+
+window.addEventListener('load', function() {
+    if (document.getElementById('aes_simple_calc_log_content')) {
+        addSimpleAesLog("Simple AES Encrypt/Decrypt tool initialized.");
+        addSimpleAesLog("Generate a key, then enter text to encrypt or Base64 (IV.Ciphertext) to decrypt.");
+    }
+});
+</script>
+
+</body>
+</html>
