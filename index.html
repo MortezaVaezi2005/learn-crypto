@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مجموعه آموزش‌های رمزنگاری</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700&display=swap');
+
+        body {
+            font-family: 'Vazirmatn', 'Tahoma', 'Helvetica', sans-serif;
+            line-height: 1.8;
+            margin: 0;
+            padding: 40px 20px; /* Added padding around the body */
+            background-color: #f4f7f6; /* A slightly different, neutral background */
+            color: #333;
+            direction: rtl;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh; /* Ensure it takes full viewport height */
+            box-sizing: border-box;
+        }
+        .container {
+            width: 100%;
+            max-width: 700px; /* Slightly smaller max-width for a landing page feel */
+            margin: 20px auto;
+            background-color: #ffffff;
+            padding: 30px 40px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            border-top: 5px solid #4a90e2; /* A distinct blue for the landing page */
+            text-align: center; /* Center align text within container */
+        }
+        h1 {
+            color: #4a90e2; /* Matching the border-top color */
+            margin-bottom: 25px;
+            font-weight: 700;
+            font-size: 2.2em;
+        }
+        p {
+            margin-bottom: 20px;
+            font-size: 1.1em;
+            color: #555;
+        }
+        .link-list {
+            list-style-type: none; /* Remove default bullet points */
+            padding: 0;
+            margin-top: 30px;
+            margin-bottom: 30px;
+        }
+        .link-list li {
+            margin-bottom: 15px;
+            background-color: #eaf2f8; /* Light blue background for list items */
+            border-radius: 6px;
+            transition: background-color 0.3s ease;
+        }
+        .link-list li:hover {
+            background-color: #d4e6f1; /* Darker on hover */
+        }
+        .link-list li a {
+            display: block;
+            padding: 15px 20px;
+            text-decoration: none;
+            color: #2c3e50; /* Dark text for links */
+            font-size: 1.2em;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        .link-list li a:hover {
+            color: #4a90e2; /* Link color change on hover */
+        }
+        .note {
+            font-size: 0.9em;
+            color: #777;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border: 1px dashed #ddd;
+            border-radius: 4px;
+            margin-top: 30px;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .container {
+                padding: 25px 20px;
+            }
+            h1 {
+                font-size: 1.9em;
+            }
+            p {
+                font-size: 1em;
+            }
+            .link-list li a {
+                font-size: 1.1em;
+                padding: 12px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📚 مجموعه آموزش‌های رمزنگاری</h1>
+        <p>
+            به این مجموعه آموزشی در زمینه اصول رمزنگاری و توابع هش خوش آمدید.
+            در هر بخش، توضیحات مفهومی همراه با ابزارهای تعاملی برای یادگیری بهتر ارائه شده است.
+            می‌توانید از طریق لینک‌های زیر به هر یک از آموزش‌ها دسترسی پیدا کنید:
+        </p>
+        
+        <ul class="link-list">
+            <li><a href="rsa_guide.html">راهنمای جامع الگوریتم RSA و ماشین حساب</a></li>
+            <li><a href="aes_guide.html">راهنمای جامع AES (با اصول جبر خطی) و ماشین حساب ساده</a></li>
+            <li><a href="hash_guide.html">راهنمای توابع هش و ماشین حساب</a></li>
+        </ul>
+
+        <p class="note">
+            <strong>توجه مهم:</strong> لطفاً نام فایل‌های <code>rsa_guide.html</code>، <code>aes_guide.html</code> و <code>hash_guide.html</code> در لینک‌های بالا را با نام و مسیر دقیق فایل‌هایی که در سیستم خود ذخیره کرده‌اید، جایگزین نمایید تا لینک‌ها به درستی کار کنند.
+        </p>
+    </div>
+</body>
+</html>
