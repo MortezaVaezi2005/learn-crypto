@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>راهنمای گام به گام و ماشین حساب الگوریتم RSA</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700&display=swap');
+
+        body {
+            font-family: 'Vazirmatn', 'Tahoma', 'Helvetica', sans-serif;
+            line-height: 1.9;
+            margin: 0;
+            padding: 20px 0;
+            background-color: #f8f9fa;
+            color: #343a40;
+            direction: rtl;
+        }
+        .container {
+            width: 85%;
+            max-width: 900px;
+            margin: 30px auto;
+            background-color: #ffffff;
+            padding: 35px 45px;
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+            border-top: 5px solid #007bff;
+        }
+        h1 {
+            text-align: center;
+            color: #0056b3;
+            margin-bottom: 35px;
+            font-weight: 700;
+        }
+        h2 {
+            color: #007bff;
+            margin-top: 30px;
+            margin-bottom: 20px;
+            font-weight: 500;
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 10px;
+        }
+        ol {
+            list-style-type: none;
+            counter-reset: step-counter;
+            padding-right: 0;
+        }
+        ol li {
+            counter-increment: step-counter;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+            position: relative;
+            padding-right: 45px;
+        }
+        ol li::before {
+            content: counter(step-counter);
+            position: absolute;
+            right: 0;
+            top: 0;
+            background-color: #007bff;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+        .formula {
+            display: block;
+            text-align: center;
+            font-family: 'Consolas', 'Menlo', 'Courier New', monospace;
+            font-size: 1.25em;
+            color: #c7254e;
+            margin: 15px auto;
+            padding: 12px 18px;
+            background-color: #f9f2f4;
+            border: 1px solid #f0d9e0;
+            border-radius: 6px;
+            direction: ltr;
+            overflow-x: auto;
+        }
+        .inline-formula {
+            font-family: 'Consolas', 'Menlo', 'Courier New', monospace;
+            color: #c7254e;
+            background-color: #f9f2f4;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.95em;
+            direction: ltr;
+        }
+        .highlight {
+            font-weight: 500;
+            color: #28a745;
+        }
+        .note {
+            font-size: 0.95em;
+            color: #6c757d;
+            margin-right: 35px;
+            padding: 10px 15px;
+            background-color: #e9ecef;
+            border-right: 4px solid #007bff;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+        .key-definition {
+            margin-top: 25px;
+            padding: 20px;
+            background-color: #e6f7ff;
+            border: 1px solid #b3e0ff;
+            border-radius: 8px;
+        }
+        .key-definition p {
+            margin: 8px 0;
+            font-size: 1.1em;
+        }
+        .key-type {
+            font-weight: bold;
+            color: #0056b3;
+        }
+        .crypto-operations {
+            margin-top: 25px;
+        }
+        .operation {
+            padding: 20px;
+            background-color: #fff3cd;
+            border: 1px solid #ffeeba;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .operation .highlight {
+             color: #856404;
+        }
+        .operation p:first-child {
+            margin-top: 0;
+        }
+        .operation p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .container {
+                width: 95%;
+                padding: 25px 20px;
+            }
+            h1 {
+                font-size: 1.8em;
+            }
+            h2 {
+                font-size: 1.5em;
+            }
+            ol li {
+                padding-right: 40px;
+                font-size: 1em;
+            }
+            ol li::before {
+                width: 25px;
+                height: 25px;
+                font-size: 0.8em;
+            }
+            .formula {
+                font-size: 1.1em;
+                padding: 10px 12px;
+            }
+            .note {
+                margin-right: 10px;
+                padding: 8px 12px;
+            }
+        }
+
+        /* Styles for RSA Calculator */
+        #rsa-calculator {
+            margin-top: 40px;
+            padding: 25px;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            background-color: #fdfdfd;
+        }
+        #rsa-calculator h3 {
+            color: #0056b3; 
+            margin-top: 10px;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 8px;
+        }
+        .calc-section {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px dashed #ccc;
+        }
+        .calc-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        .calc-step {
+            margin-bottom: 15px;
+        }
+        .calc-step label { /* Persian UI Label */
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #495057;
+        }
+        .calc-step input[type="text"] {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-family: 'Vazirmatn', 'Tahoma', sans-serif; /* Font for input text if Persian */
+            font-size: 1em;
+            direction: ltr; 
+            text-align: right; 
+        }
+        .calc-step input[type="text"]::placeholder { /* Persian UI Placeholder */
+            text-align: right; 
+            font-family: 'Vazirmatn', 'Tahoma', sans-serif;
+        }
+        #rsa-calculator button { /* Persian UI Button Text */
+            background-color: #28a745; 
+            color: white;
+            padding: 10px 18px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Vazirmatn', 'Tahoma', sans-serif;
+            font-size: 1em;
+            transition: background-color 0.3s ease;
+            margin-top: 5px;
+        }
+        #rsa-calculator button:hover {
+            background-color: #218838; 
+        }
+        .calc-result p { /* Contains Persian labels and LTR numeric results */
+            font-size: 1.05em;
+            color: #333;
+            background-color: #e9ecef;
+            padding: 8px 12px;
+            border-radius: 4px;
+            margin: 8px 0;
+        }
+        .calc-result span { /* For the LTR numeric part of the result */
+            font-weight: bold;
+            color: #007bff; 
+            direction: ltr;
+            display: inline-block; /* Ensures LTR part stays LTR */
+        }
+        .calc-error { /* English error messages */
+            color: #dc3545; 
+            font-size: 0.9em;
+            margin-top: 5px;
+            direction: ltr; /* Errors are in English */
+            text-align: left;
+        }
+        .calc-status { /* English status messages */
+            color: #17a2b8; 
+            font-size: 0.9em;
+            margin-top: 10px;
+            padding: 8px;
+            background-color: #e2f3f5;
+            border-radius: 4px;
+            direction: ltr; /* Status messages are in English */
+            text-align: left;
+        }
+        .calc-log {
+            margin-top: 20px;
+            background-color: #343a40; 
+            color: #f8f9fa; 
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Consolas', 'Menlo', 'Courier New', monospace;
+        }
+        .calc-log h4 { /* Persian UI Heading for log */
+            color: #17a2b8; 
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-family: 'Vazirmatn', 'Tahoma', sans-serif;
+        }
+        .calc-log pre { /* English log content */
+            white-space: pre-wrap; 
+            word-wrap: break-word;
+            font-size: 0.9em;
+            max-height: 200px;
+            overflow-y: auto;
+            direction: ltr; 
+            text-align: left;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>راهنمای گام به گام الگوریتم RSA</h1>
+
+        <h2>مراحل تولید کلید (Key Generation)</h2>
+        <ol>
+            <li>
+                <span class="highlight">انتخاب دو عدد اول بزرگ (p و q):</span> این اعداد باید به‌صورت تصادفی انتخاب شوند و از هم متمایز باشند. برای امنیت بالا، این اعداد باید بسیار بزرگ باشند (معمولاً تا صدها رقم).
+            </li>
+            <li>
+                <span class="highlight">محاسبه مدول n:</span> n از حاصل‌ضرب p و q به دست می‌آید. n بخشی از کلید عمومی و خصوصی خواهد بود.
+                <div class="formula">n = p &times; q</div>
+            </li>
+            <li>
+                <span class="highlight">محاسبه تابع اویلر &phi;(n) (فی n):</span> &phi;(n) تعداد اعداد صحیح مثبتی را نشان می‌دهد که کوچکتر از n بوده و نسبت به n اول هستند.
+                <div class="formula">&phi;(n) = (p-1) &times; (q-1)</div>
+                <p class="note">توجه: فرمول <span class="inline-formula">&phi;(n)=(p-1)&times;(q-1)</span> در تصویر اصلی نیز در بالا سمت چپ و در کنار این مرحله (مورد ۳ تصویر) نمایش داده شده است.</p>
+            </li>
+            <li>
+                <span class="highlight">انتخاب توان عمومی e (توان رمزگذاری):</span> e یک عدد صحیح است که باید دو شرط زیر را داشته باشد (این شروط در تصویر اصلی به عنوان موارد ۵ و ۶ مشخص شده‌اند):
+                <ul style="padding-right: 20px; margin-top: 10px;">
+                    <li>شرط اول: مقدار e باید در بازه <span class="inline-formula">φ(n) > e > 1</span> باشد.</li>
+                    <li>شرط دوم: e و &phi;(n) نسبت به هم اول باشند (یعنی بزرگترین مقسوم‌علیه مشترک آن‌ها ۱ باشد). این شرط به صورت ریاضی <span class="inline-formula">gcd(e, &phi;(n)) = 1</span> بیان می‌شود.</li>
+                </ul>
+            </li>
+            <li>
+                <span class="highlight">محاسبه توان خصوصی d (توان رمزگشایی):</span> d وارون ضربی e به پیمانه &phi;(n) است. یعنی d باید در رابطه زیر صدق کند (این رابطه در تصویر اصلی به عنوان مورد ۸ مشخص شده است):
+                <div class="formula">(d &times; e) &equiv; 1 (mod &phi;(n))</div>
+                <p class="note">این به معنی آن است که باقیمانده تقسیم <span class="inline-formula">(d &times; e)</span> بر <span class="inline-formula">&phi;(n)</span> باید ۱ باشد.</p>
+            </li>
+        </ol>
+
+        <h2>تعریف کلیدها (مطابق مورد ۹ در تصویر اصلی)</h2>
+        <div class="key-definition">
+            <p><span class="key-type">کلید عمومی (Public Key):</span> زوج مرتب <span class="inline-formula">(n, e)</span> می‌باشد. این کلید برای رمزگذاری پیام استفاده می‌شود و می‌تواند به طور عمومی منتشر شود.</p>
+            <p><span class="key-type">کلید خصوصی (Private Key):</span> زوج مرتب <span class="inline-formula">(n, d)</span> می‌باشد. این کلید برای رمزگشایی پیام استفاده می‌شود و باید به طور کاملاً محرمانه نگهداری شود.</p>
+        </div>
+
+        <h2>عملیات رمزگذاری و رمزگشایی (بر اساس موارد ۱۰ و ۱۱ در تصویر اصلی)</h2>
+        <div class="crypto-operations">
+            <div class="operation">
+                <p><span class="highlight">رمزگذاری (Encryption):</span></p>
+                <p>برای رمزگذاری پیام اصلی (M) و تبدیل آن به پیام رمز شده (C)، از کلید عمومی (n,e) و فرمول زیر استفاده می‌شود:</p>
+                <div class="formula">C &equiv; M<sup>e</sup> (mod n)</div>
+            </div>
+            <div class="operation">
+                <p><span class="highlight">رمزگشایی (Decryption):</span></p>
+                <p>برای رمزگشایی پیام رمز شده (C) و بازیابی پیام اصلی (M)، از کلید خصوصی (n,d) و فرمول زیر استفاده می‌شود:</p>
+                <div class="formula">M &equiv; C<sup>d</sup> (mod n)</div>
+            </div>
+        </div>
+        
+        <h2>ماشین حساب آموزشی RSA</h2>
+        <div id="rsa-calculator">
+            <div class="calc-section">
+                <h3>۱. تولید کلید (Key Generation)</h3>
+                <div class="calc-step">
+                    <label for="p_input">عدد اول p:</label>
+                    <input type="text" id="p_input" placeholder="مثلا: 61">
+                    <label for="q_input">عدد اول q:</label>
+                    <input type="text" id="q_input" placeholder="مثلا: 53">
+                    <button onclick="calculateNPhi()">محاسبه n و φ(n)</button>
+                    <p id="p_error" class="calc-error"></p>
+                    <p id="q_error" class="calc-error"></p>
+                </div>
+                <div class="calc-result">
+                    <p>مدول n: <span id="n_output">-</span></p>
+                    <p>تابع اویلر φ(n): <span id="phi_n_output">-</span></p>
+                </div>
+        
+                <div class="calc-step">
+                    <label for="e_input">توان عمومی e:</label>
+                    <input type="text" id="e_input" placeholder="مثلا: 17 (باید 1 < e < φ(n) و نسبت به φ(n) اول باشد)">
+                    <button onclick="calculateD()">محاسبه d (توان خصوصی)</button>
+                    <p id="e_error" class="calc-error"></p>
+                </div>
+                <div class="calc-result">
+                    <p>توان خصوصی d: <span id="d_output">-</span></p>
+                    <p>کلید عمومی: (<span id="public_key_n">-</span>, <span id="public_key_e">-</span>)</p>
+                    <p>کلید خصوصی: (<span id="private_key_n">-</span>, <span id="private_key_d">-</span>)</p>
+                </div>
+                <p id="key_gen_status" class="calc-status"></p>
+            </div>
+        
+            <div class="calc-section">
+                <h3>۲. رمزگذاری (Encryption)</h3>
+                <div class="calc-step">
+                    <label for="message_input">پیام M (عدد صحیح کوچکتر از n):</label>
+                    <input type="text" id="message_input" placeholder="مثلا: 65">
+                    <button onclick="encryptMessage()">رمزگذاری پیام</button>
+                </div>
+                <div class="calc-result">
+                    <p>پیام رمز شده C: <span id="ciphertext_output">-</span></p>
+                </div>
+                <p id="encrypt_status" class="calc-status"></p>
+            </div>
+        
+            <div class="calc-section">
+                <h3>۳. رمزگشایی (Decryption)</h3>
+                <div class="calc-step">
+                    <label for="ciphertext_input_decrypt">پیام رمز شده C (عدد صحیح):</label>
+                    <input type="text" id="ciphertext_input_decrypt" placeholder="مقدار C از مرحله قبل">
+                    <button onclick="decryptMessage()">رمزگشایی پیام</button>
+                </div>
+                <div class="calc-result">
+                    <p>پیام اصلی M': <span id="decrypted_message_output">-</span></p>
+                </div>
+                <p id="decrypt_status" class="calc-status"></p>
+            </div>
+            <div id="calc_log" class="calc-log">
+                <h4>گزارش محاسبات:</h4>
+                <pre id="log_content"></pre>
+            </div>
+        </div>
+        <p class="note" style="text-align:center; margin-top:30px; background-color: #f0f0f0; border-right: none; border-left: 4px solid #6c757d;">این صفحه وب بر اساس محتوای متنی و ساختار موجود در تصویر ارائه شده، تهیه و تنظیم گردیده است.</p>
+    </div>
+
+    <script>
+    // All calculations should use BigInt for precision with large numbers.
+    
+    // --- Helper Functions ---
+    function isPrime(num) {
+        if (num <= 1n) return false;
+        if (num <= 3n) return true;
+        if (num % 2n === 0n || num % 3n === 0n) return false;
+        for (let i = 5n; i * i <= num; i = i + 6n) {
+            if (num % i === 0n || num % (i + 2n) === 0n) return false;
+        }
+        return true;
+    }
+    
+    function gcd(a, b) {
+        a = BigInt(a);
+        b = BigInt(b);
+        while (b) {
+            let temp = b;
+            b = a % b;
+            a = temp;
+        }
+        return a;
+    }
+    
+    function modInverse(e, phi) {
+        e = BigInt(e);
+        phi = BigInt(phi);
+        if (gcd(e, phi) !== 1n) return null; 
+    
+        let m0 = phi;
+        let t, q;
+        let x0 = 0n, x1 = 1n;
+    
+        if (phi === 1n) return 1n;
+    
+        while (e > 1n) {
+            q = e / phi;
+            t = phi;
+            phi = e % phi;
+            e = t;
+            t = x0;
+            x0 = x1 - q * x0;
+            x1 = t;
+        }
+    
+        if (x1 < 0n) x1 += m0;
+        return x1;
+    }
+    
+    function power(base, exp, mod) {
+        base = BigInt(base);
+        exp = BigInt(exp);
+        mod = BigInt(mod);
+        let res = 1n;
+        base = base % mod;
+        while (exp > 0n) {
+            if (exp % 2n === 1n) res = (res * base) % mod;
+            exp = exp / 2n;
+            base = (base * base) % mod;
+        }
+        return res;
+    }
+    
+    // --- Log Function ---
+    let logHistory = [];
+    function addToLog(message) {
+        const timestamp = new Date().toLocaleTimeString('en-US'); // English timestamp
+        logHistory.push(`[${timestamp}] ${message}`);
+        if (logHistory.length > 30) { 
+            logHistory.shift();
+        }
+        document.getElementById('log_content').textContent = logHistory.join('\n');
+        const logContentElement = document.getElementById('log_content');
+        logContentElement.scrollTop = logContentElement.scrollHeight;
+    }
+    
+    // --- Global Variables for calculator state ---
+    let current_n = null;
+    let current_phi_n = null;
+    let current_e = null;
+    let current_d = null;
+    
+    // --- UI Update and Reset Functions ---
+    function clearErrorMessages() {
+        document.getElementById('p_error').textContent = '';
+        document.getElementById('q_error').textContent = '';
+        document.getElementById('e_error').textContent = '';
+        document.getElementById('key_gen_status').textContent = '';
+        document.getElementById('encrypt_status').textContent = '';
+        document.getElementById('decrypt_status').textContent = '';
+    }
+    
+    function resetKeyGenStep1Outputs() {
+        document.getElementById('n_output').textContent = '-';
+        document.getElementById('phi_n_output').textContent = '-';
+        current_n = null;
+        current_phi_n = null;
+    }
+
+    function resetKeyGenStep2Outputs() {
+        document.getElementById('d_output').textContent = '-';
+        document.getElementById('public_key_n').textContent = '-';
+        document.getElementById('public_key_e').textContent = '-';
+        document.getElementById('private_key_n').textContent = '-';
+        document.getElementById('private_key_d').textContent = '-';
+        current_e = null;
+        current_d = null;
+    }
+    
+    function resetEncryptionOutputs() {
+        document.getElementById('ciphertext_output').textContent = '-';
+    }
+    
+    function resetDecryptionOutputs() {
+        document.getElementById('decrypted_message_output').textContent = '-';
+    }
+    
+    // --- Calculation Functions ---
+    function calculateNPhi() {
+        clearErrorMessages();
+        resetKeyGenStep1Outputs(); 
+        resetKeyGenStep2Outputs(); 
+        resetEncryptionOutputs();  
+        resetDecryptionOutputs(); 
+        addToLog("Starting calculation of n and φ(n)...");
+    
+        const p_val = document.getElementById('p_input').value.trim();
+        const q_val = document.getElementById('q_input').value.trim();
+    
+        if (!p_val || !q_val) {
+            document.getElementById('key_gen_status').textContent = "Please enter values for p and q.";
+            addToLog("Error: p and q values are not entered.");
+            if (!p_val) document.getElementById('p_error').textContent = "p is required.";
+            if (!q_val) document.getElementById('q_error').textContent = "q is required.";
+            return;
+        }
+    
+        let p, q;
+        try {
+            p = BigInt(p_val);
+            q = BigInt(q_val);
+        } catch (err) {
+            document.getElementById('key_gen_status').textContent = "p and q must be integers.";
+            addToLog(`Error converting p or q to number: ${err.message}`);
+            return;
+        }
+    
+        if (p <= 1n) {
+            document.getElementById('p_error').textContent = "p must be greater than 1.";
+            addToLog("Error: p must be greater than 1.");
+            return;
+        }
+        if (q <= 1n) {
+            document.getElementById('q_error').textContent = "q must be greater than 1.";
+            addToLog("Error: q must be greater than 1.");
+            return;
+        }
+    
+        if (!isPrime(p)) {
+            document.getElementById('p_error').textContent = `${p} is not a prime number. Please enter a prime number.`;
+            addToLog(`Error: ${p} is not prime.`);
+            return;
+        }
+        if (!isPrime(q)) {
+            document.getElementById('q_error').textContent = `${q} is not a prime number. Please enter a prime number.`;
+            addToLog(`Error: ${q} is not prime.`);
+            return;
+        }
+        if (p === q) {
+            document.getElementById('p_error').textContent = "p and q must be different.";
+            document.getElementById('q_error').textContent = "p and q must be different."; // Keep error message for user UI also specific
+            addToLog("Error: p and q are the same.");
+            return;
+        }
+    
+        current_n = p * q;
+        current_phi_n = (p - 1n) * (q - 1n);
+    
+        document.getElementById('n_output').textContent = current_n.toString();
+        document.getElementById('phi_n_output').textContent = current_phi_n.toString();
+        document.getElementById('key_gen_status').textContent = "n and φ(n) calculated successfully.";
+        addToLog(`Calculated: p = ${p}, q = ${q}`);
+        addToLog(`Calculated: n = p * q = ${p} * ${q} = ${current_n}`);
+        addToLog(`Calculated: φ(n) = (p-1) * (q-1) = (${p}-1) * (${q}-1) = ${current_phi_n}`);
+    }
+    
+    function calculateD() {
+        clearErrorMessages();
+        resetKeyGenStep2Outputs(); 
+        resetEncryptionOutputs();
+        resetDecryptionOutputs();
+        addToLog("Starting calculation of d...");
+    
+        if (!current_phi_n || !current_n) { 
+            document.getElementById('key_gen_status').textContent = "First, calculate n and φ(n).";
+            addToLog("Error: n or φ(n) not calculated.");
+            return;
+        }
+    
+        const e_val = document.getElementById('e_input').value.trim();
+        if (!e_val) {
+            document.getElementById('e_error').textContent = "Please enter value for e.";
+            addToLog("Error: Value for e not entered.");
+            return;
+        }
+    
+        let e_bigint;
+        try {
+            e_bigint = BigInt(e_val);
+        } catch (err) {
+            document.getElementById('e_error').textContent = "e must be an integer.";
+            addToLog(`Error converting e to number: ${err.message}`);
+            return;
+        }
+        
+        if (e_bigint <= 1n || e_bigint >= current_phi_n) {
+            document.getElementById('e_error').textContent = `e must be between 1 and φ(n) (${current_phi_n}).`;
+            addToLog(`Error: e (${e_bigint}) is out of allowed range (1, ${current_phi_n}).`);
+            return;
+        }
+    
+        const common_divisor = gcd(e_bigint, current_phi_n);
+        if (common_divisor !== 1n) {
+            document.getElementById('e_error').textContent = `e (${e_bigint}) is not coprime to φ(n) (${current_phi_n}). GCD: ${common_divisor}`;
+            addToLog(`Error: e (${e_bigint}) and φ(n) (${current_phi_n}) are not coprime. GCD = ${common_divisor}`);
+            return;
+        }
+    
+        current_e = e_bigint;
+        current_d = modInverse(current_e, current_phi_n);
+    
+        if (current_d === null) {
+            document.getElementById('e_error').textContent = "Error calculating d. Multiplicative inverse does not exist (this shouldn't happen if gcd=1).";
+            addToLog("Critical Error: modInverse returned null for valid e and φ(n).");
+            current_d = null; 
+            return;
+        }
+    
+        document.getElementById('d_output').textContent = current_d.toString();
+        document.getElementById('public_key_n').textContent = current_n.toString();
+        document.getElementById('public_key_e').textContent = current_e.toString();
+        document.getElementById('private_key_n').textContent = current_n.toString();
+        document.getElementById('private_key_d').textContent = current_d.toString();
+        document.getElementById('key_gen_status').textContent = "Private exponent d and keys generated successfully.";
+        addToLog(`Selected: e = ${current_e}`);
+        addToLog(`Condition check: 1 < e < φ(n)  => 1 < ${current_e} < ${current_phi_n} (satisfied)`);
+        addToLog(`Condition check: gcd(e, φ(n)) = 1 => gcd(${current_e}, ${current_phi_n}) = 1 (satisfied)`);
+        addToLog(`Calculated: d = modInverse(e, φ(n)) = modInverse(${current_e}, ${current_phi_n}) = ${current_d}`);
+        addToLog(`Public Key: (n=${current_n}, e=${current_e})`);
+        addToLog(`Private Key: (n=${current_n}, d=${current_d})`);
+    }
+    
+    function encryptMessage() {
+        clearErrorMessages();
+        resetEncryptionOutputs();
+        addToLog("Starting message encryption...");
+    
+        if (!current_n || !current_e) {
+            document.getElementById('encrypt_status').textContent = "First, generate the public key (or specify e and calculate d).";
+            addToLog("Error: Public key (n, e) not available for encryption.");
+            return;
+        }
+    
+        const message_val = document.getElementById('message_input').value.trim();
+        if (!message_val) {
+            document.getElementById('encrypt_status').textContent = "Please enter message M for encryption.";
+            addToLog("Error: Message M not entered.");
+            return;
+        }
+    
+        let M;
+        try {
+            M = BigInt(message_val);
+        } catch (err) {
+            document.getElementById('encrypt_status').textContent = "Message M must be an integer.";
+            addToLog(`Error converting M to number: ${err.message}`);
+            return;
+        }
+    
+        if (M >= current_n) {
+            document.getElementById('encrypt_status').textContent = `Message M (${M}) must be less than n (${current_n}).`;
+            addToLog(`Error: M (${M}) is greater than or equal to n (${current_n}).`);
+            return;
+        }
+        if (M < 0n) {
+            document.getElementById('encrypt_status').textContent = "Message M must be a non-negative integer.";
+             addToLog(`Error: M (${M}) is negative.`);
+            return;
+        }
+    
+        const C = power(M, current_e, current_n);
+        document.getElementById('ciphertext_output').textContent = C.toString();
+        document.getElementById('encrypt_status').textContent = "Message encrypted successfully.";
+        addToLog(`Encryption: Original Message M = ${M}`);
+        addToLog(`Using Public Key: (n=${current_n}, e=${current_e})`);
+        addToLog(`Formula: C = M^e mod n = ${M}^${current_e} mod ${current_n}`);
+        addToLog(`Result: Ciphertext C = ${C}`);
+        
+        document.getElementById('ciphertext_input_decrypt').value = C.toString();
+    }
+    
+    function decryptMessage() {
+        clearErrorMessages();
+        resetDecryptionOutputs();
+        addToLog("Starting message decryption...");
+    
+        if (!current_n || !current_d) {
+            document.getElementById('decrypt_status').textContent = "First, generate the private key (or specify e and calculate d).";
+            addToLog("Error: Private key (n, d) not available for decryption.");
+            return;
+        }
+        
+        const ciphertext_val = document.getElementById('ciphertext_input_decrypt').value.trim();
+        if (!ciphertext_val) {
+            document.getElementById('decrypt_status').textContent = "Please enter ciphertext C for decryption.";
+            addToLog("Error: Ciphertext C not entered.");
+            return;
+        }
+    
+        let C;
+         try {
+            C = BigInt(ciphertext_val);
+        } catch (err) {
+            document.getElementById('decrypt_status').textContent = "Ciphertext C must be an integer.";
+            addToLog(`Error converting C to number: ${err.message}`);
+            return;
+        }
+        
+        if (C >= current_n) {
+            // This status is primarily for M, for C it's a warning.
+            // The UI status doesn't need to repeat this if M already covers it.
+            addToLog(`Warning: C (${C}) is greater than or equal to n (${current_n}). Result may not be as expected if C is not from standard encryption.`);
+        }
+        if (C < 0n) {
+            document.getElementById('decrypt_status').textContent = "Ciphertext C must be a non-negative integer.";
+            addToLog(`Error: C (${C}) is negative.`);
+            return;
+        }
+    
+        const M_prime = power(C, current_d, current_n);
+        document.getElementById('decrypted_message_output').textContent = M_prime.toString();
+        document.getElementById('decrypt_status').textContent = "Message decrypted successfully.";
+        addToLog(`Decryption: Ciphertext C = ${C}`);
+        addToLog(`Using Private Key: (n=${current_n}, d=${current_d})`);
+        addToLog(`Formula: M' = C^d mod n = ${C}^${current_d} mod ${current_n}`);
+        addToLog(`Result: Original Message M' = ${M_prime}`);
+    }
+    
+    window.onload = function() {
+        addToLog("RSA Calculator is ready. Follow the steps and try the example values.");
+        addToLog("Example values: p=61, q=53, e=17, Message M=65");
+    };
+    
+    </script>
+</body>
+</html>
