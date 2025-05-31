@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>راهنمای توابع هش و ماشین حساب</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700&display=swap');
+
+        body {
+            font-family: 'Vazirmatn', 'Tahoma', 'Helvetica', sans-serif;
+            line-height: 1.8;
+            margin: 0;
+            padding: 20px 0;
+            background-color: #f8f9fa;
+            color: #343a40;
+            direction: rtl;
+        }
+        .container {
+            width: 85%;
+            max-width: 900px;
+            margin: 30px auto;
+            background-color: #ffffff;
+            padding: 35px 45px;
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+            border-top: 5px solid #fd7e14; /* Orange accent for Hash functions */
+        }
+        h1 {
+            text-align: center;
+            color: #d95f02; /* Darker Orange */
+            margin-bottom: 35px;
+            font-weight: 700;
+        }
+        h2 {
+            color: #fd7e14; /* Primary Orange */
+            margin-top: 30px;
+            margin-bottom: 20px;
+            font-weight: 500;
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 10px;
+        }
+        h3 {
+            color: #e65100; /* Darker shade of Orange */
+            margin-top: 25px;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+        p {
+            margin-bottom: 15px;
+            font-size: 1.05em;
+            text-align: justify;
+        }
+        ul, ol {
+            padding-right: 20px;
+            margin-bottom: 15px;
+        }
+        li {
+            margin-bottom: 10px;
+            font-size: 1.05em;
+        }
+        strong {
+            font-weight: bold;
+            color: #007bff; 
+        }
+        code {
+            font-family: 'Consolas', 'Menlo', 'Courier New', monospace;
+            background-color: #fff3e0; /* Light orange background for code */
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            color: #bf360c; /* Dark orange/brown for code text */
+            direction: ltr; 
+            display: inline-block;
+        }
+        .note {
+            font-size: 0.95em;
+            color: #5a5a5a;
+            padding: 10px 15px;
+            background-color: #fff8e1; /* Very light yellow/orange for notes */
+            border-right: 4px solid #ffc107; /* Amber accent for notes */
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+        
+        /* Styles for Hash Calculators */
+        .hash-calculator-section {
+            margin-top: 30px;
+            padding: 20px;
+            border: 1px solid #ffe0b2; /* Light orange border */
+            border-radius: 8px;
+            background-color: #fffaf0; /* Very light orange background */
+        }
+        .hash-calculator-section h3 {
+            color: #d95f02; 
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .hash-calc-subsection {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px dashed #ffcc80; /* Dashed orange separator */
+        }
+        .hash-calc-subsection:last-of-type { /* Corrected selector */
+            border-bottom: none;
+        }
+        .hash-calc-subsection h4 {
+            color: #e65100; /* Dark orange for calculator subsection titles */
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+        .calc-step label { 
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #343a40;
+        }
+        .calc-step textarea {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ffcc80;
+            border-radius: 4px;
+            font-family: 'Vazirmatn', 'Tahoma', sans-serif; 
+            font-size: 1em;
+            min-height: 70px;
+            resize: vertical;
+        }
+        .hash-calculator-section button { 
+            background-color: #fd7e14; 
+            color: white;
+            padding: 10px 18px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Vazirmatn', 'Tahoma', sans-serif;
+            font-size: 1em;
+            transition: background-color 0.3s ease;
+            margin: 5px 0;
+        }
+        .hash-calculator-section button:hover {
+            background-color: #e65100; 
+        }
+        .calc-result-box { 
+            font-size: 1em;
+            color: #333;
+            background-color: #fff3e0; 
+            padding: 10px 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+            direction: ltr;
+            text-align: left;
+            font-family: 'Consolas', 'Menlo', 'Courier New', monospace;
+            word-break: break-all;
+        }
+        .calc-result-box strong { color: #d95f02; }
+
+        .calc-log-hash {
+            margin-top: 20px;
+            background-color: #424242; /* Darker grey for log */
+            color: #f5f5f5; 
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Consolas', 'Menlo', 'Courier New', monospace;
+        }
+        .calc-log-hash h4 { 
+            color: #ffab40; /* Light orange for log title */
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-family: 'Vazirmatn', 'Tahoma', sans-serif;
+            text-align: right;
+        }
+        .calc-log-hash pre { 
+            white-space: pre-wrap; 
+            word-wrap: break-word;
+            font-size: 0.9em;
+            max-height: 200px;
+            overflow-y: auto;
+            direction: ltr; 
+            text-align: left;
+        }
+
+        @media (max-width: 768px) {
+            .container { width: 95%; padding: 25px 20px; }
+            h1 { font-size: 1.8em; }
+            h2 { font-size: 1.5em; }
+            p, li { font-size: 1em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>آشنایی با توابع هَش (Hash Functions) ⛓️</h1>
+        
+        <section id="hash-intro">
+            <h2>توابع هش چه هستند؟</h2>
+            <p>
+                تابع هش یک تابع ریاضی است که یک ورودی با طول متغیر (مانند یک پیام، فایل، یا هر داده دیجیتال) را دریافت کرده و یک خروجی با طول ثابت تولید می‌کند. این خروجی معمولاً به صورت یک رشته از اعداد و حروف (اغلب در مبنای هگزادسیمال) نمایش داده می‌شود و به آن <strong>مقدار هش</strong>، <strong>چکیده پیام (Message Digest)</strong> یا به سادگی <strong>هش</strong> می‌گویند.
+            </p>
+            <p>توابع هش خوب دارای ویژگی‌های مهمی هستند:</p>
+            <ul>
+                <li><strong>قطعی بودن (Deterministic):</strong> به ازای یک ورودی یکسان، خروجی هش همواره یکسان خواهد بود.</li>
+                <li><strong>محاسبه سریع (Fast Computation):</strong> محاسبه هش یک ورودی باید به سرعت انجام شود.</li>
+                <li><strong>مقاومت در برابر پیش‌تصویر اول (Pre-image Resistance):</strong> با داشتن مقدار هش، پیدا کردن ورودی اصلی که آن هش را تولید کرده، باید از نظر محاسباتی بسیار دشوار (نزدیک به غیرممکن) باشد. این ویژگی باعث <strong>یک‌طرفه بودن</strong> تابع هش می‌شود.</li>
+                <li><strong>مقاومت در برابر پیش‌تصویر دوم (Second Pre-image Resistance):</strong> با داشتن یک ورودی و هش آن، پیدا کردن یک ورودی دیگر که همان هش را تولید کند، باید بسیار دشوار باشد.</li>
+                <li><strong>مقاومت در برابر برخورد/تصادم (Collision Resistance):</strong> پیدا کردن دو ورودی متفاوت که مقدار هش یکسانی تولید کنند، باید بسیار دشوار باشد.</li>
+                <li><strong>اثر بهمنی (Avalanche Effect):</strong> یک تغییر کوچک در ورودی (حتی یک بیت) باید منجر به تغییرات بزرگ و غیرقابل پیش‌بینی در مقدار هش خروجی شود.</li>
+            </ul>
+            
+            <h3>کاربردهای رایج توابع هش:</h3>
+            <ul>
+                <li><strong>بررسی تمامیت داده‌ها (Data Integrity):</strong> با مقایسه هش یک فایل قبل و بعد از انتقال یا ذخیره‌سازی، می‌توان تشخیص داد که آیا فایل دچار تغییر یا خرابی شده است یا خیر.</li>
+                <li><strong>ذخیره‌سازی امن رمزهای عبور:</strong> به جای ذخیره مستقیم رمز عبور، هش آن ذخیره می‌شود. هنگام ورود کاربر، هش رمز وارد شده محاسبه و با هش ذخیره شده مقایسه می‌شود.</li>
+                <li><strong>امضای دیجیتال:</strong> برای تأیید اصالت و تمامیت پیام‌ها و اسناد دیجیتال.</li>
+                <li><strong>جداول هش (Hash Tables):</strong> یک ساختمان داده پرکاربرد برای جستجوی سریع اطلاعات.</li>
+                <li><strong>فناوری بلاک‌چین:</strong> برای پیوند دادن امن بلاک‌ها به یکدیگر و تضمین تغییرناپذیری زنجیره.</li>
+            </ul>
+        </section>
+        <hr/>
+
+        <section id="hash-algorithms-explained">
+            <h2>مروری بر چند الگوریتم هش رایج</h2>
+
+            <div class="hash-algo-details">
+                <h3>۱. الگوریتم MD5 (Message Digest 5)</h3>
+                <p>
+                    MD5 یکی از اولین الگوریتم‌های هش پرکاربرد بود که در سال ۱۹۹۱ توسط <strong>ران ریوست</strong> طراحی شد. این الگوریتم یک خروجی <strong>۱۲۸ بیتی</strong> (۱۶ بایتی، یا ۳۲ کاراکتر هگزادسیمال) تولید می‌کند. MD5 به دلیل سرعت بالا در محاسبات، برای سال‌ها در کاربردهای مختلفی مانند بررسی تمامیت فایل استفاده می‌شد.
+                </p>
+                <p class="note">
+                    ⚠️ <strong>وضعیت امنیتی MD5:</strong> امروزه، MD5 به دلیل کشف آسیب‌پذیری‌های جدی (به خصوص ضعف در مقاومت در برابر برخورد) دیگر برای کاربردهای امنیتی مانند امضای دیجیتال یا ذخیره‌سازی رمز عبور <strong>امن تلقی نمی‌شود</strong> و استفاده از آن برای این اهداف توصیه نمی‌گردد. با این حال، هنوز هم ممکن است برای کاربردهای غیرامنیتی مانند ساخت کلید در جداول هش یا بررسی خطاهای تصادفی در انتقال داده استفاده شود.
+                </p>
+            </div>
+
+            <div class="hash-algo-details">
+                <h3>۲. الگوریتم SHA-1 (Secure Hash Algorithm 1)</h3>
+                <p>
+                    SHA-1 توسط <strong>آژانس امنیت ملی آمریکا (NSA)</strong> طراحی و در سال ۱۹۹۵ منتشر شد. این الگوریتم یک خروجی <strong>۱۶۰ بیتی</strong> (۲۰ بایتی، یا ۴۰ کاراکتر هگزادسیمال) تولید می‌کند. SHA-1 برای مدتی به عنوان جایگزین امن‌تری برای MD5 در نظر گرفته می‌شد و در پروتکل‌هایی مانند TLS/SSL و SSH کاربرد داشت.
+                </p>
+                <p class="note">
+                    ⚠️ <strong>وضعیت امنیتی SHA-1:</strong> مشابه MD5، SHA-1 نیز دارای ضعف‌های امنیتی شناخته شده در برابر حملات برخورد است. از سال ۲۰۱۷ به بعد، بسیاری از سازمان‌ها و مرورگرهای وب پشتیبانی از گواهی‌های امضا شده با SHA-1 را متوقف کرده‌اند. استفاده از SHA-1 برای کاربردهای امنیتی جدید <strong>اکیداً توصیه نمی‌شود.</strong>
+                </p>
+            </div>
+
+            <div class="hash-algo-details">
+                <h3>۳. الگوریتم SHA-256 (از خانواده SHA-2)</h3>
+                <p>
+                    SHA-256 عضوی از خانواده <strong>SHA-2 (Secure Hash Algorithm 2)</strong> است که آن هم توسط NSA طراحی شده و در سال ۲۰۰۱ منتشر گردید. SHA-256 یک خروجی <strong>۲۵۶ بیتی</strong> (۳۲ بایتی، یا ۶۴ کاراکتر هگزادسیمال) تولید می‌کند. این الگوریتم بر اساس ساختار متفاوتی نسبت به MD5 و SHA-1 (ساختار Merkle–Damgård با تابع فشرده‌سازی مبتنی بر رمز بلوکی فرضی) بنا شده و از امنیت بسیار بالاتری برخوردار است.
+                </p>
+                <p>
+                    SHA-256 به طور گسترده در کاربردهای امنیتی مختلفی از جمله امضای دیجیتال، پروتکل‌های TLS/SSL، تولید گواهی‌های امنیتی، و فناوری بلاک‌چین (مانند بیت‌کوین) استفاده می‌شود و همچنان یک استاندارد امن و قابل اعتماد محسوب می‌شود.
+                </p>
+            </div>
+
+            <div class="hash-algo-details">
+                <h3>۴. الگوریتم SHA-512 (از خانواده SHA-2)</h3>
+                <p>
+                    SHA-512 نیز مانند SHA-256، عضوی از خانواده SHA-2 است. تفاوت اصلی آن در طول خروجی و برخی پارامترهای داخلی است. SHA-512 یک خروجی <strong>۵۱۲ بیتی</strong> (۶۴ بایتی، یا ۱۲۸ کاراکتر هگزادسیمال) تولید می‌کند. این الگوریتم از کلماتی با اندازه ۶۴ بیت در محاسبات داخلی خود استفاده می‌کند (در حالی که SHA-256 از کلمات ۳۲ بیتی استفاده می‌کند) که می‌تواند روی معماری‌های ۶۴ بیتی بهینه‌تر باشد.
+                </p>
+                <p>
+                    SHA-512 امنیت مشابه یا حتی بالاتری نسبت به SHA-256 ارائه می‌دهد (به دلیل خروجی طولانی‌تر، مقاومت بیشتری در برابر برخی حملات تئوریک دارد) و برای کاربردهایی که به سطح امنیت بسیار بالا یا چکیده‌های طولانی‌تر نیاز دارند، مناسب است.
+                </p>
+            </div>
+        </section>
+        <hr/>
+
+        <section class="hash-calculator-section">
+            <h3>ماشین حساب توابع هش ⚙️</h3>
+            <p style="text-align:center;">در این بخش می‌توانید متن ورودی خود را با الگوریتم‌های هش مختلف محاسبه کنید.</p>
+
+            <div class="hash-calc-subsection">
+                <h4>ماشین حساب MD5</h4>
+                <div class="calc-step">
+                    <label for="md5_input">متن ورودی:</label>
+                    <textarea id="md5_input" placeholder="متن خود را برای محاسبه هش MD5 وارد کنید..."></textarea>
+                </div>
+                <button onclick="calculateMd5Hash()">محاسبه هش MD5</button>
+                <div class="calc-result-box" style="margin-top:10px;">
+                    هش MD5: <strong id="md5_output">-</strong>
+                </div>
+            </div>
+
+            <div class="hash-calc-subsection">
+                <h4>ماشین حساب SHA-1</h4>
+                <div class="calc-step">
+                    <label for="sha1_input">متن ورودی:</label>
+                    <textarea id="sha1_input" placeholder="متن خود را برای محاسبه هش SHA-1 وارد کنید..."></textarea>
+                </div>
+                <button onclick="calculateSha1Hash()">محاسبه هش SHA-1</button>
+                <div class="calc-result-box" style="margin-top:10px;">
+                    هش SHA-1: <strong id="sha1_output">-</strong>
+                </div>
+            </div>
+
+            <div class="hash-calc-subsection">
+                <h4>ماشین حساب SHA-256</h4>
+                <div class="calc-step">
+                    <label for="sha256_input">متن ورودی:</label>
+                    <textarea id="sha256_input" placeholder="متن خود را برای محاسبه هش SHA-256 وارد کنید..."></textarea>
+                </div>
+                <button onclick="calculateSha256Hash()">محاسبه هش SHA-256</button>
+                <div class="calc-result-box" style="margin-top:10px;">
+                    هش SHA-256: <strong id="sha256_output">-</strong>
+                </div>
+            </div>
+
+            <div class="hash-calc-subsection">
+                <h4>ماشین حساب SHA-512</h4>
+                <div class="calc-step">
+                    <label for="sha512_input">متن ورودی:</label>
+                    <textarea id="sha512_input" placeholder="متن خود را برای محاسبه هش SHA-512 وارد کنید..."></textarea>
+                </div>
+                <button onclick="calculateSha512Hash()">محاسبه هش SHA-512</button>
+                <div class="calc-result-box" style="margin-top:10px;">
+                    هش SHA-512: <strong id="sha512_output">-</strong>
+                </div>
+            </div>
+            
+            <div class="calc-log-hash">
+                <h4>Log:</h4>
+                <pre id="hash_calc_log_content"></pre>
+            </div>
+        </section>
+        <p class="note" style="text-align:center; margin-top:30px;">این صفحه برای اهداف آموزشی و آشنایی با مفاهیم پایه‌ای توابع هش ارائه شده است.</p>
+    </div>
+
+<script>
+let hashLogHistory = [];
+
+function addHashLog(message) {
+    const timestamp = new Date().toLocaleTimeString('en-US');
+    hashLogHistory.push(`[${timestamp}] ${message}`);
+    if (hashLogHistory.length > 30) {
+        hashLogHistory.shift();
+    }
+    const logContentElement = document.getElementById('hash_calc_log_content');
+    if (logContentElement) {
+        logContentElement.textContent = hashLogHistory.join('\n');
+        logContentElement.scrollTop = logContentElement.scrollHeight;
+    }
+}
+
+// Helper to convert ArrayBuffer to Hex String
+function bufferToHex(buffer) {
+    return Array.from(new Uint8Array(buffer))
+        .map(b => b.toString(16).padStart(2, '0'))
+        .join('');
+}
+
+// Generic Web Crypto API Hasher
+async function calculateHashWithWebCrypto(algorithm, inputId, outputId) {
+    const inputText = document.getElementById(inputId).value;
+    const outputElement = document.getElementById(outputId);
+    outputElement.textContent = '-'; // Reset
+
+    if (!inputText) {
+        addHashLog(`${algorithm} Info: Input text is empty. Nothing to hash.`);
+        // alert("لطفاً متنی برای محاسبه هش وارد کنید."); // Optional: User feedback
+        return;
+    }
+
+    try {
+        addHashLog(`Calculating ${algorithm} hash for input: "${inputText.substring(0, 30)}..."`);
+        const encoder = new TextEncoder();
+        const data = encoder.encode(inputText);
+        
+        const hashBuffer = await window.crypto.subtle.digest(algorithm, data);
+        const hashHex = bufferToHex(hashBuffer);
+        
+        outputElement.textContent = hashHex;
+        addHashLog(`${algorithm} hash calculated: ${hashHex.substring(0,40)}...`);
+    } catch (error) {
+        addHashLog(`${algorithm} Error: ${error.message}`);
+        console.error(`${algorithm} Error:`, error);
+        outputElement.textContent = "خطا در محاسبه هش";
+    }
+}
+
+function calculateSha1Hash() {
+    calculateHashWithWebCrypto('SHA-1', 'sha1_input', 'sha1_output');
+}
+
+function calculateSha256Hash() {
+    calculateHashWithWebCrypto('SHA-256', 'sha256_input', 'sha256_output');
+}
+
+function calculateSha512Hash() {
+    calculateHashWithWebCrypto('SHA-512', 'sha512_input', 'sha512_output');
+}
+
+
+/**
+* MD5 (Message-Digest Algorithm) http://www.webtoolkit.info/
+* Original code by Angel Marin, Paul Johnston.
+* Version 2.2 Copyright (C) Paul Johnston 1999 - 2009
+* Other contributors: Greg Holt, Andrew Kepert, Ydnar, Lostinet
+* Distributed under the BSD License
+* See http://pajhome.org.uk/crypt/md5 for more info.
+*/
+var MD5 = function () {
+    function Utf8Encode(string) {
+        string = string.replace(/\r\n/g,"\n");
+        var utftext = "";
+        for (var n = 0; n < string.length; n++) {
+            var charcode = string.charCodeAt(n);
+            if (charcode < 128) {
+                utftext += String.fromCharCode(charcode);
+            } else if ((charcode > 127) && (charcode < 2048)) {
+                utftext += String.fromCharCode((charcode >> 6) | 192);
+                utftext += String.fromCharCode((charcode & 63) | 128);
+            } else {
+                utftext += String.fromCharCode((charcode >> 12) | 224);
+                utftext += String.fromCharCode(((charcode >> 6) & 63) | 128);
+                utftext += String.fromCharCode((charcode & 63) | 128);
+            }
+        }
+        return utftext;
+    }
+
+    function RotateLeft(lValue, iShiftBits) {
+        return (lValue << iShiftBits) | (lValue >>> (32 - iShiftBits));
+    }
+
+    function AddUnsigned(lX, lY) {
+        var lX4, lY4, lX8, lY8, lResult;
+        lX8 = (lX & 0x80000000);
+        lY8 = (lY & 0x80000000);
+        lX4 = (lX & 0x40000000);
+        lY4 = (lY & 0x40000000);
+        lResult = (lX & 0x3FFFFFFF) + (lY & 0x3FFFFFFF);
+        if (lX4 & lY4) {
+            return (lResult ^ 0x80000000 ^ lX8 ^ lY8);
+        }
+        if (lX4 | lY4) {
+            if (lResult & 0x40000000) {
+                return (lResult ^ 0xC0000000 ^ lX8 ^ lY8);
+            } else {
+                return (lResult ^ 0x40000000 ^ lX8 ^ lY8);
+            }
+        } else {
+            return (lResult ^ lX8 ^ lY8);
+        }
+    }
+
+    function F(x, y, z) { return (x & y) | ((~x) & z); }
+    function G(x, y, z) { return (x & z) | (y & (~z)); }
+    function H(x, y, z) { return (x ^ y ^ z); }
+    function I(x, y, z) { return (y ^ (x | (~z))); }
+
+    function FF(a, b, c, d, x, s, t) {
+        return AddUnsigned(RotateLeft(AddUnsigned(AddUnsigned(a, F(b, c, d)), AddUnsigned(x, t)), s), b);
+    }
+    function GG(a, b, c, d, x, s, t) {
+        return AddUnsigned(RotateLeft(AddUnsigned(AddUnsigned(a, G(b, c, d)), AddUnsigned(x, t)), s), b);
+    }
+    function HH(a, b, c, d, x, s, t) {
+        return AddUnsigned(RotateLeft(AddUnsigned(AddUnsigned(a, H(b, c, d)), AddUnsigned(x, t)), s), b);
+    }
+    function II(a, b, c, d, x, s, t) {
+        return AddUnsigned(RotateLeft(AddUnsigned(AddUnsigned(a, I(b, c, d)), AddUnsigned(x, t)), s), b);
+    }
+
+    function ConvertToWordArray(string) {
+        var lWordCount;
+        var lMessageLength = string.length;
+        var lNumberOfWords_temp1 = lMessageLength + 8;
+        var lNumberOfWords_temp2 = (lNumberOfWords_temp1 - (lNumberOfWords_temp1 % 64)) / 64;
+        var lNumberOfWords = (lNumberOfWords_temp2 + 1) * 16;
+        var lWordArray = Array(lNumberOfWords - 1);
+        var lBytePosition = 0;
+        var lByteCount = 0;
+        while (lByteCount < lMessageLength) {
+            lWordCount = (lByteCount - (lByteCount % 4)) / 4;
+            lBytePosition = (lByteCount % 4) * 8;
+            lWordArray[lWordCount] = (lWordArray[lWordCount] | (string.charCodeAt(lByteCount) << lBytePosition));
+            lByteCount++;
+        }
+        lWordCount = (lByteCount - (lByteCount % 4)) / 4;
+        lBytePosition = (lByteCount % 4) * 8;
+        lWordArray[lWordCount] = lWordArray[lWordCount] | (0x80 << lBytePosition);
+        lWordArray[lNumberOfWords - 2] = lMessageLength << 3;
+        lWordArray[lNumberOfWords - 1] = lMessageLength >>> 29;
+        return lWordArray;
+    }
+
+    function WordToHex(lValue) {
+        var WordToHexValue = "", WordToHexValue_temp = "", lByte, lCount;
+        for (lCount = 0; lCount <= 3; lCount++) {
+            lByte = (lValue >>> (lCount * 8)) & 255;
+            WordToHexValue_temp = "0" + lByte.toString(16);
+            WordToHexValue = WordToHexValue + WordToHexValue_temp.substr(WordToHexValue_temp.length - 2, 2);
+        }
+        return WordToHexValue;
+    }
+
+    return {
+        hex_md5: function(string) {
+            var x = Array();
+            var k, AA, BB, CC, DD, a, b, c, d;
+            var S11 = 7, S12 = 12, S13 = 17, S14 = 22;
+            var S21 = 5, S22 = 9, S23 = 14, S24 = 20;
+            var S31 = 4, S32 = 11, S33 = 16, S34 = 23;
+            var S41 = 6, S42 = 10, S43 = 15, S44 = 21;
+
+            string = Utf8Encode(string);
+            x = ConvertToWordArray(string);
+
+            a = 0x67452301; b = 0xEFCDAB89; c = 0x98BADCFE; d = 0x10325476;
+
+            for (k = 0; k < x.length; k += 16) {
+                AA = a; BB = b; CC = c; DD = d;
+                a = FF(a, b, c, d, x[k + 0], S11, 0xD76AA478);
+                d = FF(d, a, b, c, x[k + 1], S12, 0xE8C7B756);
+                c = FF(c, d, a, b, x[k + 2], S13, 0x242070DB);
+                b = FF(b, c, d, a, x[k + 3], S14, 0xC1BDCEEE);
+                a = FF(a, b, c, d, x[k + 4], S11, 0xF57C0FAF);
+                d = FF(d, a, b, c, x[k + 5], S12, 0x4787C62A);
+                c = FF(c, d, a, b, x[k + 6], S13, 0xA8304613);
+                b = FF(b, c, d, a, x[k + 7], S14, 0xFD469501);
+                a = FF(a, b, c, d, x[k + 8], S11, 0x698098D8);
+                d = FF(d, a, b, c, x[k + 9], S12, 0x8B44F7AF);
+                c = FF(c, d, a, b, x[k + 10], S13, 0xFFFF5BB1);
+                b = FF(b, c, d, a, x[k + 11], S14, 0x895CD7BE);
+                a = FF(a, b, c, d, x[k + 12], S11, 0x6B901122);
+                d = FF(d, a, b, c, x[k + 13], S12, 0xFD987193);
+                c = FF(c, d, a, b, x[k + 14], S13, 0xA679438E);
+                b = FF(b, c, d, a, x[k + 15], S14, 0x49B40821);
+                a = GG(a, b, c, d, x[k + 1], S21, 0xF61E2562);
+                d = GG(d, a, b, c, x[k + 6], S22, 0xC040B340);
+                c = GG(c, d, a, b, x[k + 11], S23, 0x265E5A51);
+                b = GG(b, c, d, a, x[k + 0], S24, 0xE9B6C7AA);
+                a = GG(a, b, c, d, x[k + 5], S21, 0xD62F105D);
+                d = GG(d, a, b, c, x[k + 10], S22, 0x02441453);
+                c = GG(c, d, a, b, x[k + 15], S23, 0xD8A1E681);
+                b = GG(b, c, d, a, x[k + 4], S24, 0xE7D3FBC8);
+                a = GG(a, b, c, d, x[k + 9], S21, 0x21E1CDE6);
+                d = GG(d, a, b, c, x[k + 14], S22, 0xC33707D6);
+                c = GG(c, d, a, b, x[k + 3], S23, 0xF4D50D87);
+                b = GG(b, c, d, a, x[k + 8], S24, 0x455A14ED);
+                a = GG(a, b, c, d, x[k + 13], S21, 0xA9E3E905);
+                d = GG(d, a, b, c, x[k + 2], S22, 0xFCEFA3F8);
+                c = GG(c, d, a, b, x[k + 7], S23, 0x676F02D9);
+                b = GG(b, c, d, a, x[k + 12], S24, 0x8D2A4C8A);
+                a = HH(a, b, c, d, x[k + 5], S31, 0xFFFA3942);
+                d = HH(d, a, b, c, x[k + 8], S32, 0x8771F681);
+                c = HH(c, d, a, b, x[k + 11], S33, 0x6D9D6122);
+                b = HH(b, c, d, a, x[k + 14], S34, 0xFDE5380C);
+                a = HH(a, b, c, d, x[k + 1], S31, 0xA4BEEA44);
+                d = HH(d, a, b, c, x[k + 4], S32, 0x4BDECFA9);
+                c = HH(c, d, a, b, x[k + 7], S33, 0xF6BB4B60);
+                b = HH(b, c, d, a, x[k + 10], S34, 0xBEBFBC70);
+                a = HH(a, b, c, d, x[k + 13], S31, 0x289B7EC6);
+                d = HH(d, a, b, c, x[k + 0], S32, 0xEAA127FA);
+                c = HH(c, d, a, b, x[k + 3], S33, 0xD4EF3085);
+                b = HH(b, c, d, a, x[k + 6], S34, 0x04881D05);
+                a = HH(a, b, c, d, x[k + 9], S31, 0xD9D4D039);
+                d = HH(d, a, b, c, x[k + 12], S32, 0xE6DB99E5);
+                c = HH(c, d, a, b, x[k + 15], S33, 0x1FA27CF8);
+                b = HH(b, c, d, a, x[k + 2], S34, 0xC4AC5665);
+                a = II(a, b, c, d, x[k + 0], S41, 0xF4292244);
+                d = II(d, a, b, c, x[k + 7], S42, 0x432AFF97);
+                c = II(c, d, a, b, x[k + 14], S43, 0xAB9423A7);
+                b = II(b, c, d, a, x[k + 5], S44, 0xFC93A039);
+                a = II(a, b, c, d, x[k + 12], S41, 0x655B59C3);
+                d = II(d, a, b, c, x[k + 3], S42, 0x8F0CCC92);
+                c = II(c, d, a, b, x[k + 10], S43, 0xFFEFF47D);
+                b = II(b, c, d, a, x[k + 1], S44, 0x85845DD1);
+                a = II(a, b, c, d, x[k + 8], S41, 0x6FA87E4F);
+                d = II(d, a, b, c, x[k + 15], S42, 0xFE2CE6E0);
+                c = II(c, d, a, b, x[k + 6], S43, 0xA3014314);
+                b = II(b, c, d, a, x[k + 13], S44, 0x4E0811A1);
+                a = II(a, b, c, d, x[k + 4], S41, 0xF7537E82);
+                d = II(d, a, b, c, x[k + 11], S42, 0xBD3AF235);
+                c = II(c, d, a, b, x[k + 2], S43, 0x2AD7D2BB);
+                b = II(b, c, d, a, x[k + 9], S44, 0xEB86D391);
+                a = AddUnsigned(a, AA);
+                b = AddUnsigned(b, BB);
+                c = AddUnsigned(c, CC);
+                d = AddUnsigned(d, DD);
+            }
+            return (WordToHex(a) + WordToHex(b) + WordToHex(c) + WordToHex(d)).toLowerCase();
+        }
+    };
+}(); // Self-invoking to create the MD5 object
+
+function calculateMd5Hash() {
+    const inputText = document.getElementById('md5_input').value;
+    const outputElement = document.getElementById('md5_output');
+    outputElement.textContent = '-'; // Reset
+
+    if (!inputText && inputText !== "") { // Allow empty string to be hashed
+         addHashLog(`MD5 Info: Input text is empty. Nothing to hash.`);
+        // alert("لطفاً متنی برای محاسبه هش وارد کنید."); // Optional
+        return;
+    }
+    
+    try {
+        addHashLog(`Calculating MD5 hash for input: "${inputText.substring(0, 30)}..."`);
+        // The MD5 function internally handles UTF-8 encoding of the string.
+        const hashHex = MD5.hex_md5(inputText);
+        outputElement.textContent = hashHex;
+        addHashLog(`MD5 hash calculated: ${hashHex}`);
+    } catch (error) {
+        addHashLog(`MD5 Error: ${error.message}`);
+        console.error(`MD5 Error:`, error);
+        outputElement.textContent = "خطا در محاسبه هش MD5";
+    }
+}
+
+
+window.addEventListener('load', function() {
+    if (document.getElementById('hash_calc_log_content')) {
+        addHashLog("Hash Function Calculators initialized.");
+        addHashLog("Enter text to calculate its hash value using different algorithms.");
+    }
+});
+</script>
+
+</body>
+</html>
